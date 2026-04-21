@@ -134,6 +134,35 @@ export interface VideoInfo {
     stream: VideoStream;
 }
 
+
+export interface videoDetails {
+    title: string;
+    id: string;
+    url: string;
+    thumbnail: string;
+    duration: string;
+    views: string;
+    published: {
+      date: string;
+      datetime: string;
+    },
+    description: string;
+    aisummary: string;
+    keywords: string;
+    category: string;
+    maxQuality: string;
+    fps: string;
+}
+
+export interface authorDetails {
+    id: string;
+    name: string;
+    subsribers: string;
+    url: string;
+    avatar: string;
+}
+
+
 /**
  * Get full information about a YouTube video.
  */
@@ -308,9 +337,31 @@ try {
     };
     prepareStreamInfo(data, info.stream);
 
-    
-    
-    return info;
+    const videoDetails = {
+        title: info.title,
+        id: info.id,
+        url: info.url,
+        thumbnail: `https://i.ytimg.com/vi_webp/${info.id}/maxresdefault.webp`,
+        duration: info.duration.lengthSec,
+        views: info.views.text.split(" ")[0],
+        published: {
+            date: info.published.pretty,
+            datetime: info.published.text
+        },
+        description: info.shortDescription,
+        aisummary: info?.aisummary,
+        keywords: info.keywords,
+        category: info.category,
+        maxQuality: info?.stream?.adaptiveFormats[0]?.qualityLabel,
+        fps: info?.stream?.adaptiveFormats[0]?.fps,
+    }
+    const authorDetails = {
+      id: info.channel.id,
+      name: info.channel.name,
+      subsribers: info.channel.subscribers.pretty.split(" ")[0],
+      url: info.channel.url,
+    };
+    return {videoDetails, authorDetails};
 };
 
 export default videoInfo;
