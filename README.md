@@ -1,52 +1,80 @@
-# YouTube Extractor
+# <p align="center"><b> 🎬 yt2json </b><br>Lightweight YouTube scraper </p>
+<p align="center">
+  <a href="https://www.npmjs.com/package/yt2json">
+    <img src="https://img.shields.io/npm/v/yt2json.svg" alt="npm version">
+  </a>
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/npm/l/yt2json.svg" alt="license">
+  </a>
+</p>
 
-A simple [YouTube](https://youtube.com) scraper.
 
-[![Documentation](https://github.com/zyrouge/node-youtube-ext/actions/workflows/docs.yml/badge.svg)](https://github.com/zyrouge/node-youtube-ext/actions/workflows/docs.yml)
+A simple **YouTube scraper** originally based on [zyrouge/node-youtube-ext](https://github.com/zyrouge/node-youtube-ext),  updated and fixed to work with the latest YouTube changes.
 
-> ⚠️ YouTube stream data is decoded by evaluating arbitrary JavaScript code. By default, youtube-ext uses `eval` or `node:vm`. Please install [isolated-vm](https://www.npmjs.com/package/isolated-vm) or [@ohmyvm/vm](https://www.npmjs.com/package/@ohmyvm/vm) to prevent security issues.
+---
 
-## Features
+## ✨ Features
 
--   Faster and Better! ([comparison](https://runkit.com/zyrouge/606dd634af4a29001a4be694))
--   Supports YouTube stream generation.
--   Supports YouTube search.
--   Supports YouTube video information.
--   Supports YouTube playlist information.
--   Supports YouTube channel information.
--   No key required!
+- 📺 Fetch **video information**
+- 👤 Fetch **channel information**
+- 🔑 **No API key required**
+---
 
-## Installation
+## 📦 Installation
 
 ```bash
-npm install youtube-ext
+npm install yt2json
+````
+
+---
+
+## 🚀 Usage
+
+### CommonJS
+
+```js
+const yt2json = require("yt2json");
 ```
 
-## Usage
+### ES Modules
 
-```ts
-const ytext = require("youtube-ext");
-// or
-import ytext from "youtube-ext";
-// or
-import { ... } from "youtube-ext";
+```js
+import yt2json from "yt2json";
 ```
 
-Examples can be found [here](./examples)!
+### Named imports
 
-## Links
+```js
+import { /* functions */ } from "yt2json";
+```
 
--   [Documentation](https://youtube-ext.js.org)
--   [NPM](https://npmjs.com/package/youtube-ext)
--   [GitHub](https://github.com/zyrouge/node-youtube-ext)
+---
 
-## Similar Packages
+## 📖 Examples
 
--   [youtube-dl](https://www.npmjs.com/package/youtube-dl) (Faster and better search and info scraping)
--   [ytdl-core](https://www.npmjs.com/package/ytdl-core) (YouTube Downloader)
--   [discord-player](https://www.npmjs.com/package/discord-player) (Discord music framework)
--   [discord-ytdl-core](https://www.npmjs.com/package/discord-ytdl-core) (Ytdl-core with ffmpeg args support)
+Check out usage examples here:
+👉 [`/examples`](./examples)
 
-## License
+---
 
-[MIT](./LICENSE)
+## 🔗 Links
+
+* 📚 Documentation: [https://youtube-ext.js.org](https://youtube-ext.js.org)
+  *(based on original project, custom docs coming soon)*
+* 📦 NPM: [https://www.npmjs.com/package/yt2json](https://www.npmjs.com/package/yt2json)
+* 💻 GitHub: [https://github.com/uniqbtw/yt2json](https://github.com/uniqbtw/yt2json)
+
+---
+
+## ⚠️ Disclaimer
+
+This project is not affiliated with YouTube.
+Use responsibly and respect YouTube's Terms of Service.
+
+---
+
+## 📄 License
+
+Licensed under the **MIT License**.
+See [LICENSE](./LICENSE) for details.
+
