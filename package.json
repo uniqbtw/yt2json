@@ -1,6 +1,6 @@
 {
-    "name": "yt-scrap",
-    "version": "1.0.0",
+    "name": "yt2json",
+    "version": "1.0.1",
     "description": "A simple YouTube scraper.",
     "main": "dist/index.js",
     "files": [
@@ -24,12 +24,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/uniqbtw/yt-scrap.git"
+        "url": "git+https://github.com/uniqbtw/yt2json.git"
     },
     "author": "uniqbtw",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/uniqbtw/yt-scrap/issues"
+        "url": "https://github.com/uniqbtw/yt2json/issues"
     },
     "homepage": "",
     "devDependencies": {

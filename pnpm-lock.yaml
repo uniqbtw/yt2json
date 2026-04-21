@@ -251,30 +251,35 @@ packages:
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@ohmyvm/vm-linux-arm64-musl@0.1.0':
     resolution: {integrity: sha512-DklLgDsOJTESWuy73W2I56u57j83YWE+J4VCFKSHubXGEJgobCnYfia6zQFCGreEnFLchwANn+jtKsZlWubXsw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@ohmyvm/vm-linux-riscv64-gnu@0.1.0':
     resolution: {integrity: sha512-3RkKvKzfzJXbl5Vca30Hl9lpqTZ/eI4ZY51aFBogt1bqLDAUq0snYit/1/wQvJh8kY7cewSrsyLCccHRC8Bu3w==}
     engines: {node: '>= 10'}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@ohmyvm/vm-linux-x64-gnu@0.1.0':
     resolution: {integrity: sha512-hbVewKPtaO0oaBV6OxCuztUOXmQkLQ1TTR5HqzndKrpfsfQeNPZJgjNLOo5Rd/PtdSK5Ujkhy19oiGDmLwjwNQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@ohmyvm/vm-linux-x64-musl@0.1.0':
     resolution: {integrity: sha512-8JWoTw/bxBowDC28dqJqQcjKEYj2Zp+NW2kCzMXcd5zvRE+2/45w185vXt4VJs6LJ2TfoouzNSKIMfksbE06Sw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@ohmyvm/vm-win32-arm64-msvc@0.1.0':
     resolution: {integrity: sha512-v8154KEqtI0LG7m0Z7A1wJ74XdHJz5aPiZWMAMjDYQiDBhRvq0bQRTj8t3vWkC4nzRhUg2kuwTGrNk5IENX/CQ==}
@@ -474,8 +479,8 @@ packages:
   napi-build-utils@2.0.0:
     resolution: {integrity: sha512-GEbrYkbfF7MoNaoh2iGG84Mnf/WZfB0GdGEsM8wz7Expx/LlWf5U8t9nvJKXSp3qr5IsEbK04cBGhol/KwOsWA==}
 
-  node-abi@3.86.0:
-    resolution: {integrity: sha512-sn9Et4N3ynsetj3spsZR729DVlGH6iBG4RiDMV7HEp3guyOW6W3S0unGpLDxT50mXortGUMax/ykUNQXdqc/Xg==}
+  node-abi@3.87.0:
+    resolution: {integrity: sha512-+CGM1L1CgmtheLcBuleyYOn7NWPVu0s0EJH2C4puxgEZb9h8QpR9G2dBfZJOAUhi7VQxuBPMd0hiISWcTyiYyQ==}
     engines: {node: '>=10'}
 
   once@1.4.0:
@@ -961,7 +966,7 @@ snapshots:
 
   napi-build-utils@2.0.0: {}
 
-  node-abi@3.86.0:
+  node-abi@3.87.0:
     dependencies:
       semver: 7.7.3
 
@@ -986,7 +991,7 @@ snapshots:
       minimist: 1.2.8
       mkdirp-classic: 0.5.3
       napi-build-utils: 2.0.0
-      node-abi: 3.86.0
+      node-abi: 3.87.0
       pump: 3.0.3
       rc: 1.2.8
       simple-get: 4.0.1

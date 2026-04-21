@@ -118,6 +118,7 @@ export interface VideoInfo {
     uploaded: {
         text: string;
     };
+    aisummary: string;
     keywords: string[];
     isLive: boolean;
     isUnlisted: boolean;
@@ -148,7 +149,7 @@ export const videoInfo = async (
             constants.errors.type("options", "object", typeof options)
         );
     }
-
+    
     options = mergeObj({}, options);
 
     if (!url.startsWith("http")) {
@@ -157,7 +158,7 @@ export const videoInfo = async (
 
     let data: string;
     try {
-        const resp = await request(url, options.requestOptions);
+        const resp = await request(url+`&hl=en`, options.requestOptions);
         assertUndiciOkResponse(resp);
         data = await resp.body.text();
         cookieJar.utilizeResponseHeaders(resp.headers);
@@ -176,18 +177,25 @@ export const videoInfo = async (
     } catch (err) {
         throw new Error(`Failed to parse data from webpage. (${err})`);
     }
+    // return initialData;
 
-    let initialPlayer: any;
-    try {
-        const initialPlayerRaw = contentBetween(
-            data,
-            "var ytInitialPlayerResponse = ",
-            ";var meta = "
-        );
-        initialPlayer = JSON.parse(initialPlayerRaw);
-    } catch (err) {
-        throw new Error(`Failed to parse player data from webpage. (${err})`);
+
+let initialPlayer: any;
+
+try {
+    const match: RegExpMatchArray | null = data.match(/ytInitialPlayerResponse\s*=\s*(\{.*?\})\s*;/);
+
+    if (!match || !match[1]) {
+        throw new Error("ytInitialPlayerResponse not found");
     }
+
+    initialPlayer = JSON.parse(match[1]) as Record<string, unknown>;
+} catch (err) {
+    throw new Error(
+        `Failed to parse player data from webpage. (${err instanceof Error ? err.message : err})`
+    );
+}
+
 
     let contents: any[];
     try {
@@ -285,6 +293,9 @@ export const videoInfo = async (
                 ?.uploadDate,
         },
         keywords: initialPlayer?.videoDetails?.keywords,
+        aisummary: initialData?.engagementPanels[4]?.engagementPanelSectionListRenderer?.content?.
+        structuredDescriptionContentRenderer?.items[2]?.expandableMetadataRenderer?.header?.
+        collapsedTitle?.simpleText,
         isLive: initialPlayer?.videoDetails?.isLiveContent,
         isUnlisted:
             initialPlayer?.microformat?.playerMicroformatRenderer?.isUnlisted,
@@ -297,6 +308,8 @@ export const videoInfo = async (
     };
     prepareStreamInfo(data, info.stream);
 
+    
+    
     return info;
 };
 

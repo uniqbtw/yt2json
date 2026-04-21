@@ -30,11 +30,12 @@ export interface ChannelShorts {
     id: string;
     url: string;
     thumbnail: string;
-    duration: {
-        text: string;
-        seconds: number;
-    };
     views: string;
+}
+export interface LinksArray {
+    title: string;
+    url: string;
+    favicon: string;
 }
 
 export interface ChannelInfo {
@@ -45,8 +46,8 @@ export interface ChannelInfo {
     vanityUrl: string;
     description: string;
     subscribers: string;
-    thumbnails: string;
-    firstLink: string;
+    avatar: string;
+    links: LinksArray[];
     banner: string;
     tags: string[];
     videosCount: number;
@@ -54,6 +55,8 @@ export interface ChannelInfo {
     shorts: ChannelShorts[];
     unlisted: boolean;
     familySafe: boolean;
+    country: string;
+    viewCount: string;
 }
 
 /**
@@ -84,7 +87,7 @@ export const channelInfo = async (
 
     let data: string;
     try {
-        const resp = await request(url, options.requestOptions);
+        const resp = await request(url+`?hl=en`, options.requestOptions);
         assertUndiciOkResponse(resp);
         data = await resp.body.text();
         cookieJar.utilizeResponseHeaders(resp.headers);
@@ -99,6 +102,61 @@ export const channelInfo = async (
     } catch (err) {
         throw new Error(`Failed to parse data from webpage. (${err})`);
     }
+
+    // VIDEOS
+    data = ""
+    try {
+        const resp = await request(url+`/videos?hl=en`, options.requestOptions);
+        assertUndiciOkResponse(resp);
+        data = await resp.body.text();
+        cookieJar.utilizeResponseHeaders(resp.headers);
+    } catch (err) {
+        throw new Error(`Failed to fetch url "${url}". (${err})`);
+    }
+    let initialDataVideos: any;
+    try {
+        const raw = contentBetween(data, "var ytInitialData = ", ";</script>");
+        initialDataVideos = JSON.parse(raw);
+    } catch (err) {
+        throw new Error(`Failed to parse data from webpage. (${err})`);
+    }
+
+    // SHORTS
+    data = ""
+    try {
+        const resp = await request(url+`/shorts?hl=en`, options.requestOptions);
+        assertUndiciOkResponse(resp);
+        data = await resp.body.text();
+        cookieJar.utilizeResponseHeaders(resp.headers);
+    } catch (err) {
+        throw new Error(`Failed to fetch url "${url}". (${err})`);
+    }
+    let initialDataShorts: any;
+    try {
+        const raw = contentBetween(data, "var ytInitialData = ", ";</script>");
+        initialDataShorts = JSON.parse(raw);
+    } catch (err) {
+        throw new Error(`Failed to parse data from webpage. (${err})`);
+    }
+
+// ABOUT    
+    data = ""
+    try {
+        const resp = await request(url+`/about?hl=en`, options.requestOptions);
+        assertUndiciOkResponse(resp);
+        data = await resp.body.text();
+        cookieJar.utilizeResponseHeaders(resp.headers);
+    } catch (err) {
+        throw new Error(`Failed to fetch url "${url}". (${err})`);
+    }
+    let initialDataAbout: any;
+    try {
+        const raw = contentBetween(data, "var ytInitialData = ", ";</script>");
+        initialDataAbout = JSON.parse(raw);
+    } catch (err) {
+        throw new Error(`Failed to parse data from webpage. (${err})`);
+    }
+
 
     const bannerCount =
         initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel
@@ -115,35 +173,50 @@ export const channelInfo = async (
         description:
             initialData?.metadata?.channelMetadataRenderer?.description,
         subscribers:
-            initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel.metadata.contentMetadataViewModel.metadataRows[1].metadataParts[0].accessibilityLabel.split(
+         initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel.metadata.contentMetadataViewModel.metadataRows[1].metadataParts[0].text.content.split(
                 " "
-            )[0],
-        firstLink:
-            initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel
-                .attribution.attributionViewModel.text.content,
+             )[0],
+            // initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel.metadata.contentMetadataViewModel.metadataRows[1].metadataParts[0].accessibilityLabel, //.split(
+            //     " "
+            // )[0],
         banner: initialData?.header.pageHeaderRenderer.content
             .pageHeaderViewModel.banner.imageBannerViewModel.image.sources[
             bannerCount - 1
         ].url,
-        thumbnails:
+        avatar:
             initialData?.metadata?.channelMetadataRenderer.avatar?.thumbnails[0]
                 .url,
         tags: parseYoutubeKeywords(
             initialData?.metadata?.channelMetadataRenderer?.keywords ?? ""
         ),
-        videosCount:
-            initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel.metadata.contentMetadataViewModel.metadataRows[1].metadataParts[1].text.content.split(
-                " "
-            )[0],
         videos: [],
         shorts: [],
+        links: [],
         unlisted: initialData?.microformat?.microformatDataRenderer?.unlisted,
         familySafe:
             initialData?.metadata?.channelMetadataRenderer?.isFamilySafe,
+        // firstLink:
+        //     initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel
+        //         .attribution.attributionViewModel.text.content,
+        videosCount:
+            initialDataAbout?.onResponseReceivedEndpoints[0].showEngagementPanelEndpoint.engagementPanel.engagementPanelSectionListRenderer.content.sectionListRenderer.contents[0].
+        itemSectionRenderer.contents[0].aboutChannelRenderer.metadata.aboutChannelViewModel.
+        videoCountText.split(
+                " "
+             )[0],
+        viewCount:
+            initialDataAbout?.onResponseReceivedEndpoints[0].showEngagementPanelEndpoint.engagementPanel.engagementPanelSectionListRenderer.content.sectionListRenderer.contents[0].
+        itemSectionRenderer.contents[0].aboutChannelRenderer.metadata.aboutChannelViewModel.
+        viewCountText.split(
+                " "
+             )[0],
+        country: initialDataAbout?.onResponseReceivedEndpoints[0].showEngagementPanelEndpoint.engagementPanel.engagementPanelSectionListRenderer.content.sectionListRenderer.contents[0].
+        itemSectionRenderer.contents[0].aboutChannelRenderer.metadata.aboutChannelViewModel.
+        country,
     };
-
+    
     if (options.includeVideos) {
-        initialData?.contents?.twoColumnBrowseResultsRenderer?.tabs
+        initialDataVideos?.contents?.twoColumnBrowseResultsRenderer?.tabs
             ?.find((x: any) => x?.tabRenderer?.title === "Videos")
             ?.tabRenderer?.content?.richGridRenderer?.contents?.forEach(
                 (item: any) => {
@@ -181,74 +254,64 @@ export const channelInfo = async (
                         title: value?.title?.runs[0].text,
                         id: value?.videoId,
                         url: `https://youtu.be/${value?.videoId}`,
-                        thumbnail:
-                            value?.thumbnail?.thumbnails[
-                                value?.thumbnail?.thumbnails.length - 1
-                            ].url,
+                        thumbnail: `https://i.ytimg.com/vi_webp/${value?.videoId}/maxresdefault.webp`,
+                            // value?.thumbnail?.thumbnails[
+                            //     value?.thumbnail?.thumbnails.length - 1
+                            // ].url,
                         duration: {
                             text: duration,
                             seconds: seconds,
                         },
                         views: value?.viewCountText?.simpleText.split(" ")[0],
                     };
-                    channel.videos.push(video);
+                    if (video.id !== undefined) {
+                        channel.videos.push(video);
+                    }
+                    
                 }
             );
 
-        initialData?.contents?.twoColumnBrowseResultsRenderer?.tabs
+
+
+
+        initialDataShorts?.contents?.twoColumnBrowseResultsRenderer?.tabs
             ?.find((x: any) => x?.tabRenderer?.title === "Shorts")
             ?.tabRenderer?.content?.richGridRenderer?.contents?.forEach(
                 (item: any) => {
                     const value =
-                        item?.richItemRenderer?.content?.videoRenderer;
-                    const duration = value?.lengthText?.simpleText;
-                    let seconds;
-                    if (
-                        value?.lengthText?.simpleText.split(":").map(Number)
-                            .length === 3
-                    ) {
-                        seconds =
-                            value?.lengthText?.simpleText
-                                .split(":")
-                                .map(Number)[0] *
-                                3600 +
-                            value?.lengthText?.simpleText
-                                .split(":")
-                                .map(Number)[1] *
-                                60 +
-                            value?.lengthText?.simpleText
-                                .split(":")
-                                .map(Number)[2];
-                    } else {
-                        seconds =
-                            value?.lengthText?.simpleText
-                                .split(":")
-                                .map(Number)[0] *
-                                60 +
-                            value?.lengthText?.simpleText
-                                .split(":")
-                                .map(Number)[1];
-                    }
-                    const shorts: ChannelVideo = {
-                        title: value?.title?.runs[0].text,
-                        id: value?.videoId,
-                        url: `https://youtu.be/${value?.videoId}`,
-                        thumbnail:
-                            value?.thumbnail?.thumbnails[
-                                value?.thumbnail?.thumbnails.length - 1
-                            ].url,
-                        duration: {
-                            text: duration,
-                            seconds: seconds,
-                        },
-                        views: value?.viewCountText?.simpleText.split(" ")[0],
+                        item?.richItemRenderer?.content?.shortsLockupViewModel               
+                    const short: ChannelShorts = {
+                        title: value.overlayMetadata?.primaryText?.content,
+                        id: value?.onTap?.innertubeCommand?.reelWatchEndpoint?.videoId,
+                        url: `https://youtu.be/${value?.onTap?.innertubeCommand?.reelWatchEndpoint?.videoId}`,
+                        thumbnail: `https://i.ytimg.com/vi_webp/${value?.videoId}/maxresdefault.webp`,
+                            // value?.onTap?.innertubeCommand?.reelWatchEndpoint?.thumbnail?.thumbnails[
+                            //     value?.onTap?.innertubeCommand?.reelWatchEndpoint?.thumbnail?.thumbnails.length - 1
+                            // ].url,
+                        views: value.overlayMetadata?.secondaryText?.content?.split(" ")[0],
                     };
-                    channel.videos.push(shorts);
+                    if (short.id !== undefined) {
+                        channel.shorts.push(short);
+                    }
                 }
             );
     }
-    console.log(channel);
-    return initialData;
+
+    let linksArray = initialDataAbout?.onResponseReceivedEndpoints[0].showEngagementPanelEndpoint.engagementPanel.engagementPanelSectionListRenderer.content.sectionListRenderer.contents[0].
+          itemSectionRenderer.contents[0].aboutChannelRenderer.metadata.aboutChannelViewModel.
+         links
+
+    linksArray?.forEach((item: any) => {
+    const link = item?.channelExternalLinkViewModel;
+
+    const linkItem = {
+        title: link?.title.content,
+        url: link?.link.content,
+        favicon: link?.favicon?.sources[link?.favicon?.sources.length - 1].url,
+    };
+        channel.links.push(linkItem);
+});
+    return channel;
 };
 
 export default channelInfo;

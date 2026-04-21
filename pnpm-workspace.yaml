@@ -1,3 +1,6 @@
+ignoredBuiltDependencies:
+  - isolated-vm
+
 onlyBuiltDependencies:
-    - esbuild
-    - isolated-vm
+  - esbuild
+  - isolated-vm
