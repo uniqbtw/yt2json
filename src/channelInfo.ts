@@ -5,7 +5,6 @@ import {
     assertUndiciOkResponse,
     constants,
     contentBetween,
-    mergeObj,
     parseYoutubeKeywords,
 } from "./utils";
 
@@ -64,30 +63,21 @@ export interface ChannelInfo {
  */
 export const channelInfo = async (
     url: string,
-    options: ChannelInfoOptions = {}
+    includeVideos: any,
 ) => {
     if (typeof url !== "string") {
         throw new Error(constants.errors.type("url", "string", typeof url));
     }
-    if (typeof options !== "object") {
-        throw new Error(
-            constants.errors.type("options", "object", typeof options)
-        );
-    }
 
-    options = mergeObj(
-        {
-            //includeVideos: false,
-        },
-        options
-    );
+
+
     if (!url.startsWith("http")) {
         url = constants.urls.channel.base(url);
     }
 
     let data: string;
     try {
-        const resp = await request(url+`?hl=en`, options.requestOptions);
+        const resp = await request(url+`?hl=en`);
         assertUndiciOkResponse(resp);
         data = await resp.body.text();
         cookieJar.utilizeResponseHeaders(resp.headers);
@@ -106,7 +96,7 @@ export const channelInfo = async (
     // VIDEOS
     data = ""
     try {
-        const resp = await request(url+`/videos?hl=en`, options.requestOptions);
+        const resp = await request(url+`/videos?hl=en`);
         assertUndiciOkResponse(resp);
         data = await resp.body.text();
         cookieJar.utilizeResponseHeaders(resp.headers);
@@ -124,7 +114,7 @@ export const channelInfo = async (
     // SHORTS
     data = ""
     try {
-        const resp = await request(url+`/shorts?hl=en`, options.requestOptions);
+        const resp = await request(url+`/shorts?hl=en`);
         assertUndiciOkResponse(resp);
         data = await resp.body.text();
         cookieJar.utilizeResponseHeaders(resp.headers);
@@ -142,7 +132,7 @@ export const channelInfo = async (
 // ABOUT    
     data = ""
     try {
-        const resp = await request(url+`/about?hl=en`, options.requestOptions);
+        const resp = await request(url+`/about?hl=en`);
         assertUndiciOkResponse(resp);
         data = await resp.body.text();
         cookieJar.utilizeResponseHeaders(resp.headers);
@@ -215,7 +205,7 @@ export const channelInfo = async (
         country,
     };
     
-    if (options.includeVideos) {
+    if (includeVideos === `true`) {
         initialDataVideos?.contents?.twoColumnBrowseResultsRenderer?.tabs
             ?.find((x: any) => x?.tabRenderer?.title === "Videos")
             ?.tabRenderer?.content?.richGridRenderer?.contents?.forEach(
@@ -264,9 +254,9 @@ export const channelInfo = async (
                         },
                         views: value?.viewCountText?.simpleText.split(" ")[0],
                     };
-                    if (video.id !== undefined) {
+                    // if (video.id !== undefined) {
                         channel.videos.push(video);
-                    }
+                    // }
                     
                 }
             );
@@ -290,9 +280,9 @@ export const channelInfo = async (
                             // ].url,
                         views: value?.overlayMetadata?.secondaryText?.content?.split(" ")[0],
                     };
-                    if (short.id !== undefined) {
+                    // if (short.id !== undefined) {
                         channel.shorts.push(short);
-                    }
+                    // }
                 }
             );
     }
