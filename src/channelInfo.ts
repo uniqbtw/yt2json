@@ -77,7 +77,7 @@ export const channelInfo = async (
 
     options = mergeObj(
         {
-            includeVideos: false,
+            //includeVideos: false,
         },
         options
     );
