@@ -77,7 +77,7 @@ export const channelInfo = async (
 
     options = mergeObj(
         {
-            // includeVideos: false,
+            includeVideos: false,
         },
         options
     );
@@ -215,7 +215,7 @@ export const channelInfo = async (
         country,
     };
     
-    if (options.includeVideos) {
+    if (options.includeVideos == true) {
         initialDataVideos?.contents?.twoColumnBrowseResultsRenderer?.tabs
             ?.find((x: any) => x?.tabRenderer?.title === "Videos")
             ?.tabRenderer?.content?.richGridRenderer?.contents?.forEach(
