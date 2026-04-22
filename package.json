@@ -1,6 +1,6 @@
 {
     "name": "yt2json",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "A simple YouTube scraper.",
     "main": "dist/index.js",
     "files": [

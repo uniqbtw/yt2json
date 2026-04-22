@@ -159,28 +159,28 @@ export const channelInfo = async (
 
 
     const bannerCount =
-        initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel
-            .banner.imageBannerViewModel.image.sources.length;
+        initialData?.header?.pageHeaderRenderer?.content?.pageHeaderViewModel
+            ?.banner?.imageBannerViewModel?.image.sources?.length;
     const channel: ChannelInfo = {
         name: initialData?.metadata?.channelMetadataRenderer?.title,
         id: initialData?.metadata?.channelMetadataRenderer?.externalId,
         url: initialData?.metadata?.channelMetadataRenderer?.channelUrl,
         rssUrl: initialData?.metadata?.channelMetadataRenderer?.rssUrl,
         vanityUrl:
-            initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel
-                .metadata.contentMetadataViewModel.metadataRows[0]
-                .metadataParts[0].text.content,
+            initialData?.header?.pageHeaderRenderer?.content.pageHeaderViewModel
+                ?.metadata?.contentMetadataViewModel?.metadataRows[0]
+                ?.metadataParts[0]?.text?.content,
         description:
             initialData?.metadata?.channelMetadataRenderer?.description,
         subscribers:
-         initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel.metadata.contentMetadataViewModel.metadataRows[1].metadataParts[0].text.content.split(
+         initialData?.header?.pageHeaderRenderer?.content?.pageHeaderViewModel?.metadata?.contentMetadataViewModel?.metadataRows[1]?.metadataParts[0]?.text?.content?.split(
                 " "
              )[0],
             // initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel.metadata.contentMetadataViewModel.metadataRows[1].metadataParts[0].accessibilityLabel, //.split(
             //     " "
             // )[0],
-        banner: initialData?.header.pageHeaderRenderer.content
-            .pageHeaderViewModel.banner.imageBannerViewModel.image.sources[
+        banner: initialData?.header?.pageHeaderRenderer?.content
+            ?.pageHeaderViewModel?.banner?.imageBannerViewModel?.image?.sources[
             bannerCount - 1
         ].url,
         avatar:
@@ -199,19 +199,19 @@ export const channelInfo = async (
         //     initialData?.header.pageHeaderRenderer.content.pageHeaderViewModel
         //         .attribution.attributionViewModel.text.content,
         videosCount:
-            initialDataAbout?.onResponseReceivedEndpoints[0].showEngagementPanelEndpoint.engagementPanel.engagementPanelSectionListRenderer.content.sectionListRenderer.contents[0].
-        itemSectionRenderer.contents[0].aboutChannelRenderer.metadata.aboutChannelViewModel.
-        videoCountText.split(
+            initialDataAbout?.onResponseReceivedEndpoints[0]?.showEngagementPanelEndpoint?.engagementPanel?.engagementPanelSectionListRenderer?.content?.sectionListRenderer?.contents[0]?.
+        itemSectionRenderer?.contents[0]?.aboutChannelRenderer?.metadata?.aboutChannelViewModel?.
+        videoCountText?.split(
                 " "
              )[0],
         viewCount:
-            initialDataAbout?.onResponseReceivedEndpoints[0].showEngagementPanelEndpoint.engagementPanel.engagementPanelSectionListRenderer.content.sectionListRenderer.contents[0].
-        itemSectionRenderer.contents[0].aboutChannelRenderer.metadata.aboutChannelViewModel.
-        viewCountText.split(
+            initialDataAbout?.onResponseReceivedEndpoints[0]?.showEngagementPanelEndpoint?.engagementPanel?.engagementPanelSectionListRenderer?.content?.sectionListRenderer?.contents[0]?.
+        itemSectionRenderer?.contents[0]?.aboutChannelRenderer?.metadata?.aboutChannelViewModel?.
+        viewCountText?.split(
                 " "
              )[0],
-        country: initialDataAbout?.onResponseReceivedEndpoints[0].showEngagementPanelEndpoint.engagementPanel.engagementPanelSectionListRenderer.content.sectionListRenderer.contents[0].
-        itemSectionRenderer.contents[0].aboutChannelRenderer.metadata.aboutChannelViewModel.
+        country: initialDataAbout?.onResponseReceivedEndpoints[0]?.showEngagementPanelEndpoint?.engagementPanel?.engagementPanelSectionListRenderer?.content?.sectionListRenderer?.contents[0]?.
+        itemSectionRenderer?.contents[0]?.aboutChannelRenderer?.metadata?.aboutChannelViewModel?.
         country,
     };
     
@@ -297,16 +297,16 @@ export const channelInfo = async (
             );
     }
 
-    let linksArray = initialDataAbout?.onResponseReceivedEndpoints[0].showEngagementPanelEndpoint.engagementPanel.engagementPanelSectionListRenderer.content.sectionListRenderer.contents[0].
-          itemSectionRenderer.contents[0].aboutChannelRenderer.metadata.aboutChannelViewModel.
+    let linksArray = initialDataAbout?.onResponseReceivedEndpoints[0]?.showEngagementPanelEndpoint?.engagementPanel?.engagementPanelSectionListRenderer?.content?.sectionListRenderer?.contents[0]?.
+          itemSectionRenderer?.contents[0]?.aboutChannelRenderer?.metadata?.aboutChannelViewModel?.
          links
 
     linksArray?.forEach((item: any) => {
     const link = item?.channelExternalLinkViewModel;
 
     const linkItem = {
-        title: link?.title.content,
-        url: link?.link.content,
+        title: link?.title?.content,
+        url: link?.link?.content,
         favicon: link?.favicon?.sources[link?.favicon?.sources.length - 1].url,
     };
         channel.links.push(linkItem);
