@@ -215,7 +215,7 @@ export const channelInfo = async (
         country,
     };
     
-    if (options.includeVideos == true) {
+    if (options.includeVideos) {
         initialDataVideos?.contents?.twoColumnBrowseResultsRenderer?.tabs
             ?.find((x: any) => x?.tabRenderer?.title === "Videos")
             ?.tabRenderer?.content?.richGridRenderer?.contents?.forEach(
