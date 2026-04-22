@@ -281,14 +281,14 @@ export const channelInfo = async (
                     const value =
                         item?.richItemRenderer?.content?.shortsLockupViewModel               
                     const short: ChannelShorts = {
-                        title: value.overlayMetadata?.primaryText?.content,
+                        title: value?.overlayMetadata?.primaryText?.content,
                         id: value?.onTap?.innertubeCommand?.reelWatchEndpoint?.videoId,
                         url: `https://youtu.be/${value?.onTap?.innertubeCommand?.reelWatchEndpoint?.videoId}`,
                         thumbnail: `https://i.ytimg.com/vi_webp/${value?.videoId}/maxresdefault.webp`,
                             // value?.onTap?.innertubeCommand?.reelWatchEndpoint?.thumbnail?.thumbnails[
                             //     value?.onTap?.innertubeCommand?.reelWatchEndpoint?.thumbnail?.thumbnails.length - 1
                             // ].url,
-                        views: value.overlayMetadata?.secondaryText?.content?.split(" ")[0],
+                        views: value?.overlayMetadata?.secondaryText?.content?.split(" ")[0],
                     };
                     if (short.id !== undefined) {
                         channel.shorts.push(short);
