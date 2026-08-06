@@ -30,6 +30,16 @@ export const constants = {
         },
         channel: {
             base: (id: string) => `${constants.urls.base}/channel/${id}`,
+            tab: (base: string, tab?: string) => {
+                const url = new URL(base);
+                if (tab) {
+                    url.pathname = `${url.pathname.replace(/\/+$/, "")}/${tab}`;
+                }
+                url.searchParams.set("hl", "en");
+                return url.toString();
+            },
+            continuation: (key: string) =>
+                `${constants.urls.base}/youtubei/v1/browse?key=${key}`,
         },
     },
     requestOptions: {
