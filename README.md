@@ -62,7 +62,7 @@ Returns the channel's metadata (name, id, avatar, banner, subscribers, links, co
 
 ```js
 const channel = await yt2json.channelInfo("https://www.youtube.com/@mkbhd");
-// channel.joinedDate -> "Mar 21, 2008"
+// channel.joinedDate -> "21.03.2008"  (DD.MM.YYYY)
 ```
 
 Pass `includeVideos` to also fetch the channel's `videos`, `shorts` and `streams` — each

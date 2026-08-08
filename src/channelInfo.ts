@@ -52,6 +52,7 @@ export interface ChannelInfo {
     banner: string;
     tags: string[];
     videosCount: number;
+    /** Sign-up date as `DD.MM.YYYY`. */
     joinedDate?: string;
     videos: ChannelVideo[];
     shorts: ChannelShorts[];
@@ -118,6 +119,43 @@ const parseLockupMetadata = (rows: any) => {
         }
     }
     return parsed;
+};
+
+const monthNames = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec",
+];
+const joinedDateRegex = /^\s*(?:Joined\s+)?([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s*$/i;
+
+/**
+ * The about panel reports the sign-up date as "Joined Mar 21, 2008" - the page is
+ * always requested with `hl=en`, so the month is an English name. Normalised to
+ * `DD.MM.YYYY`; anything that doesn't match that shape is dropped rather than
+ * returned in a foreign format.
+ */
+const parseJoinedDate = (text: any): string | undefined => {
+    if (typeof text !== "string") return undefined;
+    const match = joinedDateRegex.exec(text);
+    const month = match?.[1];
+    const day = match?.[2];
+    const year = match?.[3];
+    if (!month || !day || !year) return undefined;
+    const monthIndex = monthNames.indexOf(month.slice(0, 3).toLowerCase());
+    if (monthIndex === -1) return undefined;
+    return `${day.padStart(2, "0")}.${String(monthIndex + 1).padStart(
+        2,
+        "0"
+    )}.${year}`;
 };
 
 const parseLockupVideo = (lockup: any): ChannelVideo | null => {
@@ -374,11 +412,7 @@ export const channelInfo = async (
         videosCount: parseInt(
             String(about?.videoCountText ?? "").replace(/[^\d]/g, "")
         ),
-        // Reported as "Joined Mar 21, 2008" - the label is dropped, the date kept.
-        joinedDate:
-            typeof about?.joinedDateText?.content === "string"
-                ? about.joinedDateText.content.replace(/^Joined\s+/i, "")
-                : undefined,
+        joinedDate: parseJoinedDate(about?.joinedDateText?.content),
         viewCount: about?.viewCountText?.split(" ")[0],
         country: about?.country,
     };
