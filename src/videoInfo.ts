@@ -70,6 +70,13 @@ export interface VideoStream {
     };
 }
 
+export interface VideoLikes {
+    /** Unrounded count, e.g. `96508`. `null` when the channel hides it. */
+    exact: number | null;
+    /** Abbreviated count as shown on the page, e.g. `"96K"`. */
+    pretty: string | null;
+}
+
 export interface VideoInfo {
     title: string;
     id: string;
@@ -98,14 +105,7 @@ export interface VideoInfo {
         height: number;
     }[];
     ratings: {
-        likes: {
-            text: string;
-            pretty: string;
-        };
-        dislikes: {
-            text: string;
-            pretty: string;
-        };
+        likes: VideoLikes;
     };
     views: {
         text: string;
@@ -142,6 +142,7 @@ export interface videoDetails {
     thumbnail: string;
     duration: string;
     views: string;
+    likes: VideoLikes;
     published: {
       date: string;
       datetime: string;
@@ -162,6 +163,34 @@ export interface authorDetails {
     avatar: string;
 }
 
+
+const prettyLikesRegex = /^[\d.,]+[KMB]?$/;
+
+/**
+ * Likes moved out of `topLevelButtons[].toggleButtonRenderer` into a segmented view
+ * model. The button label carries the rounded count (`"96K"`); the unrounded one
+ * exists only inside the accessibility label ("like this video along with 96,508
+ * other people"). A channel hiding its like count leaves the label as plain "Like",
+ * which is reported as `null` rather than as a bogus count.
+ *
+ * Dislike counts are not returned by YouTube at all since 2021, so they are gone.
+ */
+const parseLikes = (primary: any): VideoLikes => {
+    const button = primary?.videoActions?.menuRenderer?.topLevelButtons
+        ?.find((x: any) => x?.segmentedLikeDislikeButtonViewModel)
+        ?.segmentedLikeDislikeButtonViewModel?.likeButtonViewModel
+        ?.likeButtonViewModel?.toggleButtonViewModel?.toggleButtonViewModel
+        ?.defaultButtonViewModel?.buttonViewModel;
+    const title = button?.title;
+    const digits = String(button?.accessibilityText ?? "").replace(/\D/g, "");
+    return {
+        exact: digits.length ? Number(digits) : null,
+        pretty:
+            typeof title === "string" && prettyLikesRegex.test(title)
+                ? title
+                : null,
+    };
+};
 
 /**
  * Get full information about a YouTube video.
@@ -279,32 +308,7 @@ try {
         },
         thumbnails: initialPlayer?.videoDetails?.thumbnail?.thumbnails,
         ratings: {
-            likes: {
-                text: primary?.videoActions?.menuRenderer?.topLevelButtons?.find(
-                    (x: any) =>
-                        x?.toggleButtonRenderer?.defaultIcon?.iconType ===
-                        "LIKE"
-                )?.toggleButtonRenderer?.defaultText?.accessibility
-                    ?.accessibilityData?.label,
-                pretty: primary?.videoActions?.menuRenderer?.topLevelButtons?.find(
-                    (x: any) =>
-                        x?.toggleButtonRenderer?.defaultIcon?.iconType ===
-                        "LIKE"
-                )?.toggleButtonRenderer?.defaultText?.simpleText,
-            },
-            dislikes: {
-                text: primary?.videoActions?.menuRenderer?.topLevelButtons?.find(
-                    (x: any) =>
-                        x?.toggleButtonRenderer?.defaultIcon?.iconType ===
-                        "DISLIKE"
-                )?.toggleButtonRenderer?.defaultText?.accessibility
-                    ?.accessibilityData?.label,
-                pretty: primary?.videoActions?.menuRenderer?.topLevelButtons?.find(
-                    (x: any) =>
-                        x?.toggleButtonRenderer?.defaultIcon?.iconType ===
-                        "DISLIKE"
-                )?.toggleButtonRenderer?.defaultText?.simpleText,
-            },
+            likes: parseLikes(primary),
         },
         views: {
             text: primary?.viewCount?.videoViewCountRenderer?.viewCount
@@ -343,7 +347,8 @@ try {
         url: info.url,
         thumbnail: `https://i.ytimg.com/vi_webp/${info.id}/maxresdefault.webp`,
         duration: info.duration.lengthSec,
-        views: info.views.text.split(" ")[0],
+        views: info.views.text?.split(" ")[0],
+        likes: info.ratings.likes,
         published: {
             date: info.published.pretty,
             datetime: info.published.text
@@ -352,13 +357,13 @@ try {
         aisummary: info?.aisummary,
         keywords: info.keywords,
         category: info.category,
-        maxQuality: info?.stream?.adaptiveFormats[0]?.qualityLabel,
-        fps: info?.stream?.adaptiveFormats[0]?.fps,
+        maxQuality: info?.stream?.adaptiveFormats?.[0]?.qualityLabel,
+        fps: info?.stream?.adaptiveFormats?.[0]?.fps,
     }
     const authorDetails = {
       id: info.channel.id,
       name: info.channel.name,
-      subsribers: info.channel.subscribers.pretty.split(" ")[0],
+      subsribers: info.channel.subscribers.pretty?.split(" ")[0],
       url: info.channel.url,
     };
     return {videoDetails, authorDetails};
